@@ -301,3 +301,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+#Benchmark.NET results
+BenchmarkDotNet.Artifacts/

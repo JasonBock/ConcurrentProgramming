@@ -1,10 +1,11 @@
 ﻿namespace PlayingWithLocks
 {
-	public sealed class Ledger
+	public sealed class MonitorLedger 
+		: ILedger
 	{
 		private readonly object @lock = new object();
 
-		public Ledger(decimal value) => this.Value = value;
+		public MonitorLedger(decimal value) => this.Value = value;
 
 		public void Credit(decimal value)
 		{
