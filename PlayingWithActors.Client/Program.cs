@@ -2,6 +2,7 @@
 using Orleans.Runtime.Configuration;
 using PlayingWithActors.Contracts;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -32,11 +33,24 @@ namespace PlayingWithActors.Client
 			Console.Out.WriteLine("Begin...");
 
 			var collatzId = Guid.NewGuid();
-			var collatz = GrainClient.GrainFactory.GetGrain<ICollatzGrain>(collatzId);
-			var result = collatz.CalculateIterationCountAsync(
-				BigInteger.Parse("473891748")).Result;
+			var tasks = new List<Task>
+			{
+				Program.RunCalculation(collatzId),
+				Program.RunCalculation(collatzId),
+				Program.RunCalculation(collatzId)
+			};
 
-			Console.Out.WriteLine(result);
+			Task.WaitAll(tasks.ToArray());
 		}
+
+		private static Task RunCalculation(Guid collatzId) =>
+			Task.Run(() =>
+			{
+				var collatz = GrainClient.GrainFactory.GetGrain<ICollatzGrain>(collatzId);
+				var result = collatz.CalculateIterationCountAsync(
+					BigInteger.Parse("5731897498317984739817498317")).Result;
+
+				Console.Out.WriteLine($"Result is {result}");
+			});
 	}
 }

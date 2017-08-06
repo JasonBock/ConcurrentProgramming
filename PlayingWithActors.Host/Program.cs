@@ -1,5 +1,4 @@
 ﻿using Orleans.Runtime.Host;
-using PlayingWithActors.Grains;
 using System;
 
 namespace PlayingWithActors.Host
@@ -10,7 +9,6 @@ namespace PlayingWithActors.Host
 
 		static void Main(string[] args)
 		{
-			Console.Out.WriteLine(typeof(CollatzGrain).Name);
 			Program.InitializeSilo();
 			Console.WriteLine("Orleans silo is running.");
 			Console.WriteLine("Press Enter to terminate...");
