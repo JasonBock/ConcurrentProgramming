@@ -1,11 +1,12 @@
-﻿using PlayingWithActors.Contracts;
+﻿using Orleans;
+using PlayingWithActors.Contracts;
 using System.Numerics;
 using System.Threading.Tasks;
 
 namespace PlayingWithActors.Grains
 {
 	public class CollatzGrain
-		: ICollatzGrain
+		: Grain, ICollatzGrain
 	{
 		public Task<BigInteger> CalculateIterationCountAsync(BigInteger value)
 		{
