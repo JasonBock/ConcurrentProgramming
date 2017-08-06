@@ -2,10 +2,10 @@
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace PlayingWithActors
+namespace PlayingWithActors.Contracts
 {
 	public interface ICollatzGrain
-		: IGrainWithStringKey
+		: IGrainWithGuidKey
 	{
 		Task<BigInteger> CalculateIterationCountAsync(BigInteger value);
 	}

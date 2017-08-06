@@ -1,16 +1,17 @@
-﻿using System.Numerics;
+﻿using PlayingWithActors.Contracts;
+using System.Numerics;
 using System.Threading.Tasks;
 
-namespace PlayingWithActors
+namespace PlayingWithActors.Grains
 {
-	public sealed class CollatzGrain
+	public class CollatzGrain
 		: ICollatzGrain
 	{
 		public Task<BigInteger> CalculateIterationCountAsync(BigInteger value)
 		{
 			var iterations = BigInteger.Zero;
 
-			while(value > 1)
+			while (value > 1)
 			{
 				value = value % 2 == 0 ?
 					value / 2 : ((3 * value) + 1) / 2;
