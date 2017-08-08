@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace PlayingWithThreads
@@ -9,7 +10,8 @@ namespace PlayingWithThreads
 		{
 #pragma warning disable IDE0022 // Use expression body for methods
 			//Program.CreateNewThreads();
-			Program.CreateNewThreadsViaPool();
+			//Program.CreateNewThreadsViaPool();
+			Program.CreateNewThreadsViaPoolAndWait();
 #pragma warning restore IDE0022 // Use expression body for methods
 		}
 
@@ -37,10 +39,44 @@ namespace PlayingWithThreads
 			}
 		}
 
+		private static void CreateNewThreadsViaPoolAndWait()
+		{
+			var waits = new EventWaitHandle[64];
+
+			for (var i = 0; i < 64; i++)
+			{
+				var wait = new ManualResetEvent(false);
+				waits[i] = wait;
+				ThreadPool.QueueUserWorkItem(
+					Program.DoThreadingWithThreadingData, new ThreadingData(wait, i));
+			}
+
+			WaitHandle.WaitAll(waits);
+		}
+
 		private static void DoThreading() =>
 			Console.Out.WriteLine($"Current thread ID: {Thread.CurrentThread.ManagedThreadId}");
 
 		private static void DoThreadingWithData(object id) =>
 			Console.Out.WriteLine($"Current id: {id}, thread ID: {Thread.CurrentThread.ManagedThreadId}");
+
+		private static void DoThreadingWithThreadingData(object data)
+		{
+			var value = data as ThreadingData;
+			Console.Out.WriteLine($"Current id: {value.Id}, thread ID: {Thread.CurrentThread.ManagedThreadId}");
+			value.Wait.Set();
+		}
+	}
+
+	internal class ThreadingData
+	{
+		internal ThreadingData(EventWaitHandle wait, int id)
+		{
+			this.Wait = wait;
+			this.Id = id;
+		}
+
+		internal int Id { get; }
+		internal EventWaitHandle Wait { get; }
 	}
 }
