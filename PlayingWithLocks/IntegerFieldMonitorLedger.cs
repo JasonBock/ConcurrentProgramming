@@ -12,7 +12,7 @@ namespace PlayingWithLocks
 		{
 			lock (this.@lock)
 			{
-				this.Value -= value;
+				this.Value += value;
 			}
 		}
 
@@ -20,7 +20,7 @@ namespace PlayingWithLocks
 		{
 			lock (this.@lock)
 			{
-				this.Value += value;
+				this.Value -= value;
 			}
 		}
 

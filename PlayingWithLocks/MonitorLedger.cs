@@ -11,7 +11,7 @@
 		{
 			lock (this.@lock)
 			{
-				this.Value -= value;
+				this.Value += value;
 			}
 		}
 
@@ -19,7 +19,7 @@
 		{
 			lock(this.@lock)
 			{
-				this.Value += value;
+				this.Value -= value;
 			}
 		}
 

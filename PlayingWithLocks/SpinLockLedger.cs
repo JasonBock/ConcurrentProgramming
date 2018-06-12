@@ -16,7 +16,7 @@ namespace PlayingWithLocks
 			try
 			{
 				this.@lock.Enter(ref isLockAcquired);
-				this.Value -= value;
+				this.Value += value;
 			}
 			finally
 			{
@@ -34,7 +34,7 @@ namespace PlayingWithLocks
 			try
 			{
 				this.@lock.Enter(ref isLockAcquired);
-				this.Value += value;
+				this.Value -= value;
 			}
 			finally
 			{
