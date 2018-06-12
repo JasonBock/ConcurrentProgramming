@@ -9,13 +9,15 @@ namespace PlayingWithAsyncAwaitTasks
 	{
 		private static async Task Main()
 		{
-			Console.Out.WriteLine($"MainAsync thread id: {Thread.CurrentThread.ManagedThreadId}");
+			Console.Out.WriteLine(
+				$"{nameof(Program.Main)} thread id: {Thread.CurrentThread.ManagedThreadId}");
 			await Program.ReadFileAsync();
 		}
 
 		private static async Task ReadFileAsync()
 		{
-			await Console.Out.WriteLineAsync($"ReadFileAsync thread id: {Thread.CurrentThread.ManagedThreadId}");
+			await Console.Out.WriteLineAsync(
+				$"{nameof(Program.ReadFileAsync)} thread id: {Thread.CurrentThread.ManagedThreadId}");
 
 			using (var stream = new StreamReader("lines.txt"))
 			//using (var stream = new StreamReader(new FileStream("lines.txt", FileMode.Open)))
@@ -24,10 +26,10 @@ namespace PlayingWithAsyncAwaitTasks
 				{
 					var line = await stream.ReadLineAsync();
 					await Console.Out.WriteLineAsync(
-						$"ReadFileAsync - after ReadLineAsync(), thread id: {Thread.CurrentThread.ManagedThreadId}");
+						$"\tAfter {nameof(Program.ReadFileAsync)}, thread id: {Thread.CurrentThread.ManagedThreadId}");
 					await Console.Out.WriteLineAsync(line);
 					await Console.Out.WriteLineAsync(
-						$"ReadFileAsync - after WriteLineAsync(), thread id: {Thread.CurrentThread.ManagedThreadId}");
+						$"\tAfter {nameof(Program.ReadFileAsync)}, thread id: {Thread.CurrentThread.ManagedThreadId}");
 				}
 			}
 		}
