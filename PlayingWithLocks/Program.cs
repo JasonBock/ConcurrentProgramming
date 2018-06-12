@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
-using Nito.AsyncEx;
 using Spackle;
 using System;
 using System.Collections.Generic;
@@ -9,23 +8,13 @@ namespace PlayingWithLocks
 {
 	class Program
 	{
-		// C# 7.1 will let you create "async Main".
-		// Until then...
-		static void Main(string[] args)
-		{
-#pragma warning disable IDE0022 // Use expression body for methods
-			//AsyncContext.Run(() => Program.MainAsync(args));
-			BenchmarkRunner.Run<SpinLockPerformance>();
-#pragma warning restore IDE0022 // Use expression body for methods
-		}
+		//await Program.BashLedgerAsync(new MonitorLedger(100));
+		//await Program.BashLedgerAsync(new SpinLockLedger(100));
+		//static async Task Main() =>
+		//	await Program.BashLedgerAsync(new SpinLockLedger(100));
 
-		private static async Task MainAsync(string[] args)
-		{
-#pragma warning disable IDE0022 // Use expression body for methods
-			await Program.BashLedgerAsync(new MonitorLedger(100));
-			//await Program.BashLedgerAsync(new SpinLockLedger(100));
-#pragma warning restore IDE0022 // Use expression body for methods
-		}
+		static void Main() =>
+			BenchmarkRunner.Run<SpinLockPerformance>();
 
 		private static async Task BashLedgerAsync(ILedger ledger)
 		{

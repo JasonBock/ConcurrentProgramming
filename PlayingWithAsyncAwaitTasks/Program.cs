@@ -1,5 +1,4 @@
-﻿using Nito.AsyncEx;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,17 +7,7 @@ namespace PlayingWithAsyncAwaitTasks
 {
 	class Program
 	{
-		static void Main(string[] args)
-		{
-			Console.Out.WriteLine($"Main thread id: {Thread.CurrentThread.ManagedThreadId}");
-			AsyncContext.Run(() => Program.MainAsync(args));
-			var c = Task.Run(() => { });
-			var c2 = Task.Run(() => { });
-
-			Task.WhenAll(c, c2);
-		}
-
-		private static async Task MainAsync(string[] args)
+		private static async Task Main()
 		{
 			Console.Out.WriteLine($"MainAsync thread id: {Thread.CurrentThread.ManagedThreadId}");
 			await Program.ReadFileAsync();
@@ -28,8 +17,8 @@ namespace PlayingWithAsyncAwaitTasks
 		{
 			await Console.Out.WriteLineAsync($"ReadFileAsync thread id: {Thread.CurrentThread.ManagedThreadId}");
 
-			//using (var stream = new StreamReader("lines.txt"))
-			using (var stream = new StreamReader(new FileStream("lines.txt", FileMode.Open)))
+			using (var stream = new StreamReader("lines.txt"))
+			//using (var stream = new StreamReader(new FileStream("lines.txt", FileMode.Open)))
 			{
 				while (!stream.EndOfStream)
 				{

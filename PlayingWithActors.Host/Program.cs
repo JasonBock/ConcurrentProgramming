@@ -1,44 +1,33 @@
-﻿using Orleans.Runtime.Host;
+﻿using Orleans;
+using Orleans.Configuration;
+using Orleans.Hosting;
+using PlayingWithActors.Grains;
 using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace PlayingWithActors.Host
 {
 	class Program
 	{
-		private static SiloHost siloHost;
-
-		static void Main(string[] args)
+		static async Task Main()
 		{
-			Program.InitializeSilo();
-			Console.WriteLine("Orleans silo is running.");
-			Console.WriteLine("Press Enter to terminate...");
-			Console.ReadLine();
-			Program.ShutdownSilo();
-		}
+			var builder = new SiloHostBuilder()
+				.UseLocalhostClustering()
+				.Configure<EndpointOptions>(
+					options => options.AdvertisedIPAddress = IPAddress.Loopback)
+				.ConfigureApplicationParts(
+					parts => parts.AddApplicationPart(typeof(CollatzGrain).Assembly).WithReferences());
 
-		private static void InitializeSilo()
-		{
-			Program.siloHost = new SiloHost("CollatzSilo")
-			{
-				ConfigFileName = "OrleansConfiguration.xml"
-			};
-			Program.siloHost.InitializeOrleansSilo();
+			var host = builder.Build();
+			await host.StartAsync();
 
-			if (!siloHost.StartOrleansSilo())
-			{
-				throw new SystemException(
-					$"Failed to start Orleans silo '{siloHost.Name}' as a {siloHost.Type} node");
-			}
-		}
+			await Console.Out.WriteLineAsync("Orleans silo is running.");
+			await Console.Out.WriteLineAsync("Press Enter to terminate...");
+			await Console.In.ReadLineAsync();
 
-		private static void ShutdownSilo()
-		{
-			if (Program.siloHost != null)
-			{
-				siloHost.Dispose();
-				GC.SuppressFinalize(siloHost);
-				siloHost = null;
-			}
+			await host.StopAsync();
+			await Console.Out.WriteLineAsync("Orleans silo is terminated.");
 		}
 	}
 }

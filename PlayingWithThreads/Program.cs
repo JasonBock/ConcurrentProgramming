@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 
 namespace PlayingWithThreads
 {
 	class Program
 	{
-		static void Main(string[] args)
-		{
-#pragma warning disable IDE0022 // Use expression body for methods
-			//Program.CreateNewThreads();
-			//Program.CreateNewThreadsViaPool();
-			Program.CreateNewThreadsViaPoolAndWait();
-#pragma warning restore IDE0022 // Use expression body for methods
-		}
+		//Program.CreateNewThreads();
+		//Program.CreateNewThreadsViaPool();
+		//Program.CreateNewThreadsViaPoolAndWait();
+		static void Main() => 
+			Program.CreateNewThreadsViaPool();
 
 		private static void CreateNewThreads()
 		{
