@@ -14,9 +14,6 @@ namespace PlayingWithLocks
 		public void Debit(int value) =>
 			Interlocked.Add(ref this.value, value * -1);
 
-		public int Value
-		{
-			get => this.value;
-		}
+		public int Value => this.value;
 	}
 }

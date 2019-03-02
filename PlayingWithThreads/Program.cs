@@ -5,11 +5,10 @@ namespace PlayingWithThreads
 {
 	class Program
 	{
-		//Program.CreateNewThreads();
-		//Program.CreateNewThreadsViaPool();
-		//Program.CreateNewThreadsViaPoolAndWait();
-		static void Main() => 
+		static void Main() =>
+			//Program.CreateNewThreads();
 			Program.CreateNewThreadsViaPool();
+			//Program.CreateNewThreadsViaPoolAndWait();
 
 		private static void CreateNewThreads()
 		{
