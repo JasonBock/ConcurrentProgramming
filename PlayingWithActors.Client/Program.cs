@@ -1,5 +1,5 @@
 ﻿using Orleans;
-using Orleans.Runtime;
+using Orleans.Runtime.Messaging;
 using PlayingWithActors.Contracts;
 using Polly;
 using System.Globalization;
@@ -8,21 +8,25 @@ using System.Numerics;
 const int RetryCount = 5;
 var Retry = TimeSpan.FromSeconds(1);
 
-var policy = Policy.Handle<SiloUnavailableException>().WaitAndRetryAsync(
-	RetryCount, retryAttempt =>
+var policy = Policy.Handle<ConnectionFailedException>().WaitAndRetryAsync(
+	RetryCount, retryAttempt => 
 	{
+		Console.Out.WriteLine($"Retrying with attempt {retryAttempt} of {RetryCount}...");
 		return Retry;
 	});
 var client = await policy.ExecuteAsync(GetClientAsync).ConfigureAwait(false);
 
 await Console.Out.WriteLineAsync("Begin...").ConfigureAwait(false);
 
-var collatzId = Guid.NewGuid();
+var sharedGrainId = Guid.NewGuid();
 var tasks = new List<Task>
 {
-	RunCalculation(collatzId, client),
-	RunCalculation(collatzId, client),
-	RunCalculation(collatzId, client)
+	RunCalculation(sharedGrainId, client),
+	RunCalculation(sharedGrainId, client),
+	RunCalculation(sharedGrainId, client),
+	RunCalculation(Guid.NewGuid(), client),
+	RunCalculation(Guid.NewGuid(), client),
+	RunCalculation(Guid.NewGuid(), client)
 };
 
 await Task.WhenAll(tasks.ToArray()).ConfigureAwait(false);
@@ -39,17 +43,13 @@ async Task<IClusterClient> GetClientAsync()
 	return clientBuilder;
 }
 
-static Task RunCalculation(Guid collatzId, IClusterClient client) =>
+static Task RunCalculation(Guid grainId, IClusterClient client) =>
 	Task.Run(() =>
 	{
-		// Make a shared grain...
-		var collatz = client.GetGrain<ICollatzGrain>(collatzId);
-
-		// Make a unique grain...
-		//var collatz = client.GetGrain<ICollatzGrain>(Guid.NewGuid());
+		var collatz = client.GetGrain<ICollatzGrain>(grainId);
 
 		var result = collatz.CalculateIterationCountAsync(
 			BigInteger.Parse("5731897498317984739817498317", CultureInfo.InvariantCulture)).Result;
 
-		Console.Out.WriteLine($"Result is {result}");
+		Console.Out.WriteLine($"Result is {result} from grain {grainId}");
 	});
