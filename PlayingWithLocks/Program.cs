@@ -1,49 +1,38 @@
 ﻿using BenchmarkDotNet.Running;
+using PlayingWithLocks;
 using Spackle;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace PlayingWithLocks
+await BashLedgerAsync(new MonitorLedger(100)).ConfigureAwait(false);
+//await Program.BashLedgerAsync(new SpinLockLedger(100));
+//await Program.BashLedgerAsync(new SpinLockLedger(100));
+//BenchmarkRunner.Run<SpinLockPerformance>();
+
+static async Task BashLedgerAsync(ILedger ledger)
 {
-	class Program
+	var manipulators = new List<Task>();
+
+	for (var i = 0; i < 10; i++)
 	{
-		//await Program.BashLedgerAsync(new MonitorLedger(100));
-		//await Program.BashLedgerAsync(new SpinLockLedger(100));
-		//static async Task Main() =>
-		//	await Program.BashLedgerAsync(new SpinLockLedger(100));
+		manipulators.Add(Task.Run(() => ManipulateLedger(ledger)));
+	}
 
-		static void Main() =>
-			BenchmarkRunner.Run<SpinLockPerformance>();
+	await Task.WhenAll(manipulators).ConfigureAwait(false);
+	await Console.Out.WriteLineAsync($"Final value: {ledger.Value}").ConfigureAwait(false);
+}
 
-		private static async Task BashLedgerAsync(ILedger ledger)
+static void ManipulateLedger(ILedger ledger)
+{
+	var random = new SecureRandom();
+
+	for (var i = 0; i < 1000; i++)
+	{
+		if (random.NextBoolean())
 		{
-			var manipulators = new List<Task>();
-
-			for (var i = 0; i < 10; i++)
-			{
-				manipulators.Add(Task.Run(() => Program.ManipulateLedger(ledger)));
-			}
-
-			await Task.WhenAll(manipulators);
-			Console.Out.WriteLine($"Final value: {ledger.Value}");
+			ledger.Credit((decimal)random.Next(1, 100));
 		}
-
-		private static void ManipulateLedger(ILedger ledger)
+		else
 		{
-			var random = new SecureRandom();
-
-			for (var i = 0; i < 1000; i++)
-			{
-				if (random.NextBoolean())
-				{
-					ledger.Credit((decimal)random.Next(1, 100));
-				}
-				else
-				{
-					ledger.Debit((decimal)random.Next(1, 100));
-				}
-			}
+			ledger.Debit((decimal)random.Next(1, 100));
 		}
 	}
 }

@@ -20,14 +20,14 @@ namespace PlayingWithActors.Host
 					parts => parts.AddApplicationPart(typeof(CollatzGrain).Assembly).WithReferences());
 
 			var host = builder.Build();
-			await host.StartAsync();
+			await host.StartAsync().ConfigureAwait(false);
 
-			await Console.Out.WriteLineAsync("Orleans silo is running.");
-			await Console.Out.WriteLineAsync("Press Enter to terminate...");
-			await Console.In.ReadLineAsync();
+			await Console.Out.WriteLineAsync("Orleans silo is running.").ConfigureAwait(false);
+			await Console.Out.WriteLineAsync("Press Enter to terminate...").ConfigureAwait(false);
+			await Console.In.ReadLineAsync().ConfigureAwait(false);
 
-			await host.StopAsync();
-			await Console.Out.WriteLineAsync("Orleans silo is terminated.");
+			await host.StopAsync().ConfigureAwait(false);
+			await Console.Out.WriteLineAsync("Orleans silo is terminated.").ConfigureAwait(false);
 		}
 	}
 }

@@ -1,10 +1,9 @@
-﻿namespace PlayingWithLocks
-{
-	public interface ILedger
-	{
-		decimal Value { get; }
+﻿namespace PlayingWithLocks;
 
-		void Credit(decimal value);
-		void Debit(decimal value);
-	}
+public interface ILedger
+{
+	decimal Value { get; }
+
+	void Credit(decimal value);
+	void Debit(decimal value);
 }

@@ -1,37 +1,22 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+﻿await Console.Out.WriteLineAsync(
+	$"Current thread id: {Environment.CurrentManagedThreadId}").ConfigureAwait(false);
+await ReadFileAsync().ConfigureAwait(false);
 
-namespace PlayingWithAsyncAwaitTasks
+static async Task ReadFileAsync()
 {
-	class Program
+	await Console.Out.WriteLineAsync(
+		$"{nameof(ReadFileAsync)} thread id: {Environment.CurrentManagedThreadId}").ConfigureAwait(false);
+
+	//using var stream = new StreamReader(new FileStream("lines.txt", FileMode.Open));
+	using var stream = new StreamReader("lines.txt");
+
+	while (!stream.EndOfStream)
 	{
-		private static async Task Main()
-		{
-			Console.Out.WriteLine(
-				$"{nameof(Program.Main)} thread id: {Thread.CurrentThread.ManagedThreadId}");
-			await Program.ReadFileAsync();
-		}
-
-		private static async Task ReadFileAsync()
-		{
-			await Console.Out.WriteLineAsync(
-				$"{nameof(Program.ReadFileAsync)} thread id: {Thread.CurrentThread.ManagedThreadId}");
-
-			using (var stream = new StreamReader("lines.txt"))
-			//using (var stream = new StreamReader(new FileStream("lines.txt", FileMode.Open)))
-			{
-				while (!stream.EndOfStream)
-				{
-					var line = await stream.ReadLineAsync();
-					await Console.Out.WriteLineAsync(
-						$"\tAfter {nameof(Program.ReadFileAsync)}, thread id: {Thread.CurrentThread.ManagedThreadId}");
-					await Console.Out.WriteLineAsync(line);
-					await Console.Out.WriteLineAsync(
-						$"\tAfter {nameof(Program.ReadFileAsync)}, thread id: {Thread.CurrentThread.ManagedThreadId}");
-				}
-			}
-		}
+		var line = await stream.ReadLineAsync().ConfigureAwait(false);
+		await Console.Out.WriteLineAsync(
+			$"\tAfter {nameof(ReadFileAsync)}, thread id: {Environment.CurrentManagedThreadId}").ConfigureAwait(false);
+		await Console.Out.WriteLineAsync(line).ConfigureAwait(false);
+		await Console.Out.WriteLineAsync(
+			$"\tAfter {nameof(ReadFileAsync)}, thread id: {Environment.CurrentManagedThreadId}").ConfigureAwait(false);
 	}
 }

@@ -1,50 +1,47 @@
-﻿using System.Threading;
+﻿namespace PlayingWithLocks;
 
-namespace PlayingWithLocks
+public sealed class SpinLockLedger
+	: ILedger
 {
-	public sealed class SpinLockLedger
-		: ILedger
+	private SpinLock @lock;
+
+	public SpinLockLedger(decimal value) => this.Value = value;
+
+	public void Credit(decimal value)
 	{
-		private SpinLock @lock = new SpinLock();
+		var isLockAcquired = false;
 
-		public SpinLockLedger(decimal value) => this.Value = value;
-
-		public void Credit(decimal value)
+		try
 		{
-			var isLockAcquired = false;
-
-			try
+			this.@lock.Enter(ref isLockAcquired);
+			this.Value += value;
+		}
+		finally
+		{
+			if (isLockAcquired)
 			{
-				this.@lock.Enter(ref isLockAcquired);
-				this.Value += value;
-			}
-			finally
-			{
-				if (isLockAcquired)
-				{
-					this.@lock.Exit();
-				}
+				this.@lock.Exit();
 			}
 		}
-
-		public void Debit(decimal value)
-		{
-			var isLockAcquired = false;
-
-			try
-			{
-				this.@lock.Enter(ref isLockAcquired);
-				this.Value -= value;
-			}
-			finally
-			{
-				if (isLockAcquired)
-				{
-					this.@lock.Exit();
-				}
-			}
-		}
-
-		public decimal Value { get; private set; }
 	}
+
+	public void Debit(decimal value)
+	{
+		var isLockAcquired = false;
+
+		try
+		{
+			this.@lock.Enter(ref isLockAcquired);
+			this.Value -= value;
+		}
+		finally
+		{
+			if (isLockAcquired)
+			{
+				this.@lock.Exit();
+			}
+		}
+	}
+
+	public decimal Value { get; private set; }
 }
