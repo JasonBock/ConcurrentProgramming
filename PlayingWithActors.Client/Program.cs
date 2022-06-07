@@ -19,6 +19,9 @@ var client = await policy.ExecuteAsync(GetClientAsync).ConfigureAwait(false);
 await Console.Out.WriteLineAsync("Begin...").ConfigureAwait(false);
 
 var sharedGrainId = Guid.NewGuid();
+
+await Console.Out.WriteLineAsync($"Shared grain ID: {sharedGrainId}").ConfigureAwait(false);
+
 var tasks = new List<Task>
 {
 	RunCalculation(sharedGrainId, client),
