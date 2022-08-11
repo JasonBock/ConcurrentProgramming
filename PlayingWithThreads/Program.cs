@@ -1,5 +1,5 @@
-﻿CreateNewThreads();
-CreateNewThreadsViaPool();
+﻿//CreateNewThreads();
+//CreateNewThreadsViaPool();
 CreateNewThreadsViaPoolAndWait();
 
 static void CreateNewThreads()

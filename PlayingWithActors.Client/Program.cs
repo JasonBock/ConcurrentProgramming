@@ -24,12 +24,12 @@ await Console.Out.WriteLineAsync($"Shared grain ID: {sharedGrainId}").ConfigureA
 
 var tasks = new List<Task>
 {
-	RunCalculation(sharedGrainId, client),
-	RunCalculation(sharedGrainId, client),
-	RunCalculation(sharedGrainId, client),
-	RunCalculation(Guid.NewGuid(), client),
-	RunCalculation(Guid.NewGuid(), client),
-	RunCalculation(Guid.NewGuid(), client)
+	RunCalculationAsync(sharedGrainId, client),
+	RunCalculationAsync(sharedGrainId, client),
+	RunCalculationAsync(sharedGrainId, client),
+	RunCalculationAsync(Guid.NewGuid(), client),
+	RunCalculationAsync(Guid.NewGuid(), client),
+	RunCalculationAsync(Guid.NewGuid(), client)
 };
 
 await Task.WhenAll(tasks.ToArray()).ConfigureAwait(false);
@@ -46,13 +46,12 @@ async Task<IClusterClient> GetClientAsync()
 	return clientBuilder;
 }
 
-static Task RunCalculation(Guid grainId, IClusterClient client) =>
-	Task.Run(() =>
-	{
-		var collatz = client.GetGrain<ICollatzGrain>(grainId);
+static async Task RunCalculationAsync(Guid grainId, IClusterClient client)
+{
+	var collatz = client.GetGrain<ICollatzGrain>(grainId);
 
-		var result = collatz.CalculateIterationCountAsync(
-			BigInteger.Parse("5731897498317984739817498317", CultureInfo.InvariantCulture)).Result;
+	var result = await collatz.CalculateIterationCountAsync(
+		BigInteger.Parse("5731897498317984739817498317", CultureInfo.InvariantCulture)).ConfigureAwait(false);
 
-		Console.Out.WriteLine($"Result is {result} from grain {grainId}");
-	});
+	await Console.Out.WriteLineAsync($"Result is {result} from grain {grainId}").ConfigureAwait(false);
+}
