@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace PlayingWithLocks;
+﻿namespace PlayingWithLocks;
 
 public sealed class IntegerFieldInterlockedLedger
 {

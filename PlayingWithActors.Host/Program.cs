@@ -1,22 +1,18 @@
-﻿using Orleans;
-using Orleans.Configuration;
-using Orleans.Hosting;
-using PlayingWithActors.Grains;
-using System.Net;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-var builder = new SiloHostBuilder()
-	.UseLocalhostClustering()
-	.Configure<EndpointOptions>(
-		options => options.AdvertisedIPAddress = IPAddress.Loopback)
-	.ConfigureApplicationParts(
-		parts => parts.AddApplicationPart(typeof(CollatzGrain).Assembly).WithReferences());
+var builder = Host.CreateDefaultBuilder(args)
+	.UseOrleans(silo => 
+		silo.UseLocalhostClustering()
+			.ConfigureLogging(logging => logging.AddConsole()))
+	.UseConsoleLifetime();
 
-var host = builder.Build();
-await host.StartAsync().ConfigureAwait(false);
+using var host = builder.Build();
+await host.RunAsync();
 
-await Console.Out.WriteLineAsync("Orleans silo is running.").ConfigureAwait(false);
-await Console.Out.WriteLineAsync("Press Enter to terminate...").ConfigureAwait(false);
-await Console.In.ReadLineAsync().ConfigureAwait(false);
+Console.WriteLine("Orleans silo is running.");
+Console.WriteLine("Press Enter to terminate...");
+Console.ReadLine();
 
-await host.StopAsync().ConfigureAwait(false);
-await Console.Out.WriteLineAsync("Orleans silo is terminated.").ConfigureAwait(false);
+await host.StopAsync();
+Console.WriteLine("Orleans silo is terminated.");

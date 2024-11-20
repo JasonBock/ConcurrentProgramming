@@ -2,10 +2,11 @@
 using PlayingWithLocks;
 using Spackle;
 
-await BashLedgerAsync(new MonitorLedger(100)).ConfigureAwait(false);
+//await BashLedgerAsync(new MonitorLedger(100));
+//await BashLedgerAsync(new LockLedger(100));
 //await Program.BashLedgerAsync(new SpinLockLedger(100));
 //await Program.BashLedgerAsync(new SpinLockLedger(100));
-//BenchmarkRunner.Run<SpinLockPerformance>();
+BenchmarkRunner.Run<SpinLockPerformance>();
 
 static async Task BashLedgerAsync(ILedger ledger)
 {
@@ -16,8 +17,8 @@ static async Task BashLedgerAsync(ILedger ledger)
 		manipulators.Add(Task.Run(() => ManipulateLedger(ledger)));
 	}
 
-	await Task.WhenAll(manipulators).ConfigureAwait(false);
-	await Console.Out.WriteLineAsync($"Final value: {ledger.Value}").ConfigureAwait(false);
+	await Task.WhenAll(manipulators);
+	await Console.Out.WriteLineAsync($"Final value: {ledger.Value}");
 }
 
 static void ManipulateLedger(ILedger ledger)
@@ -28,11 +29,11 @@ static void ManipulateLedger(ILedger ledger)
 	{
 		if (random.NextBoolean())
 		{
-			ledger.Credit((decimal)random.Next(1, 100));
+			ledger.Credit(random.Next(1, 100));
 		}
 		else
 		{
-			ledger.Debit((decimal)random.Next(1, 100));
+			ledger.Debit(random.Next(1, 100));
 		}
 	}
 }

@@ -1,10 +1,9 @@
-﻿using Orleans;
-using System.Numerics;
+﻿namespace PlayingWithActors.Contracts;
 
-namespace PlayingWithActors.Contracts;
-
+[Alias("PlayingWithActors.Contracts.ICollatzGrain")]
 public interface ICollatzGrain
 	: IGrainWithGuidKey
 {
-	Task<BigInteger> CalculateIterationCountAsync(BigInteger value);
+   [Alias("CalculateIterationCountAsync")]
+   ValueTask<int> CalculateIterationCountAsync(string value);
 }

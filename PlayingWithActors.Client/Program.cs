@@ -1,57 +1,36 @@
-﻿using Orleans;
-using Orleans.Runtime.Messaging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using PlayingWithActors.Contracts;
-using Polly;
-using System.Globalization;
-using System.Numerics;
 
-const int RetryCount = 5;
-var Retry = TimeSpan.FromSeconds(1);
+var builder = Host.CreateDefaultBuilder(args)
+	 .UseOrleansClient(client => client.UseLocalhostClustering())
+	 .ConfigureLogging(logging => logging.AddConsole())
+	 .UseConsoleLifetime();
 
-var policy = Policy.Handle<ConnectionFailedException>().WaitAndRetryAsync(
-	RetryCount, retryAttempt => 
-	{
-		Console.Out.WriteLine($"Retrying with attempt {retryAttempt} of {RetryCount}...");
-		return Retry;
-	});
-var client = await policy.ExecuteAsync(GetClientAsync).ConfigureAwait(false);
+using var host = builder.Build();
+await host.StartAsync();
 
-await Console.Out.WriteLineAsync("Begin...").ConfigureAwait(false);
+var client = host.Services.GetRequiredService<IClusterClient>();
+
+Console.WriteLine("Begin...");
 
 var sharedGrainId = Guid.NewGuid();
 
-await Console.Out.WriteLineAsync($"Shared grain ID: {sharedGrainId}").ConfigureAwait(false);
-
 var tasks = new List<Task>
 {
-	RunCalculationAsync(sharedGrainId, client),
-	RunCalculationAsync(sharedGrainId, client),
-	RunCalculationAsync(sharedGrainId, client),
-	RunCalculationAsync(Guid.NewGuid(), client),
-	RunCalculationAsync(Guid.NewGuid(), client),
-	RunCalculationAsync(Guid.NewGuid(), client)
+	RunCalculationAsync("368497025897042654972594625799205742506794289425748658462507438917489371894631897457389056391065390165893165893016589031658903618950631890", Guid.NewGuid(), client),
+	RunCalculationAsync("568497025897042654972594625799205742506794289425748658462507438917489371894631897457389056391065390165893165893016589031658903618950631890", Guid.NewGuid(), client),
+	RunCalculationAsync("768497025897042654972594625799205742506794289425748658462507438917489371894631897457389056391065390165893165893016589031658903618950631890", Guid.NewGuid(), client)
 };
 
-await Task.WhenAll(tasks.ToArray()).ConfigureAwait(false);
+await Task.WhenAll([.. tasks]);
 
-async Task<IClusterClient> GetClientAsync()
-{
-	var clientBuilder = new ClientBuilder()
-		.UseLocalhostClustering()
-		.ConfigureApplicationParts(
-			parts => parts.AddApplicationPart(typeof(ICollatzGrain).Assembly).WithReferences())
-		.Build();
-
-	await clientBuilder.Connect().ConfigureAwait(false);
-	return clientBuilder;
-}
-
-static async Task RunCalculationAsync(Guid grainId, IClusterClient client)
+static async Task RunCalculationAsync(string value, Guid grainId, IClusterClient client)
 {
 	var collatz = client.GetGrain<ICollatzGrain>(grainId);
 
-	var result = await collatz.CalculateIterationCountAsync(
-		BigInteger.Parse("5731897498317984739817498317", CultureInfo.InvariantCulture)).ConfigureAwait(false);
+	var result = await collatz.CalculateIterationCountAsync(value);
 
-	await Console.Out.WriteLineAsync($"Result is {result} from grain {grainId}").ConfigureAwait(false);
+	await Console.Out.WriteLineAsync($"Result is {result} from grain {grainId}");
 }

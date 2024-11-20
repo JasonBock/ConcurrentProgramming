@@ -22,7 +22,7 @@ static void CreateNewThreadsViaPool()
 {
 	for (var i = 0; i < 64; i++)
 	{
-		ThreadPool.QueueUserWorkItem(DoThreadingWithData, i);
+		_ = ThreadPool.QueueUserWorkItem(DoThreadingWithData, i);
 	}
 }
 
@@ -34,11 +34,11 @@ static void CreateNewThreadsViaPoolAndWait()
 	{
 		var wait = new ManualResetEvent(false);
 		waits[i] = wait;
-		ThreadPool.QueueUserWorkItem(
+		_ = ThreadPool.QueueUserWorkItem(
 			DoThreadingWithThreadingData, new ThreadingData(wait, i));
 	}
 
-	WaitHandle.WaitAll(waits);
+	_ = WaitHandle.WaitAll(waits);
 }
 
 static void DoThreading() =>
@@ -51,10 +51,10 @@ static void DoThreadingWithThreadingData(object? data)
 {
 	var value = (data as ThreadingData)!;
 	Console.Out.WriteLine($"Current id: {value.Id}, thread ID: {Environment.CurrentManagedThreadId}");
-	value.Wait.Set();
+	_ = value.Wait.Set();
 }
 
-internal class ThreadingData
+internal sealed class ThreadingData
 {
 	internal ThreadingData(EventWaitHandle wait, int id)
 	{

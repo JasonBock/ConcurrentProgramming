@@ -1,5 +1,5 @@
-﻿using Orleans;
-using PlayingWithActors.Contracts;
+﻿using PlayingWithActors.Contracts;
+using System.Globalization;
 using System.Numerics;
 
 namespace PlayingWithActors.Grains;
@@ -7,32 +7,32 @@ namespace PlayingWithActors.Grains;
 public class CollatzGrain
 	: Grain, ICollatzGrain
 {
-	public override async Task OnActivateAsync()
+   public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
 		await Console.Out.WriteLineAsync(
-			$"{nameof(this.OnActivateAsync)} - primary ID is {this.GetGrainIdentity().PrimaryKey}").ConfigureAwait(false);
-		await base.OnActivateAsync().ConfigureAwait(false);
+			$"{nameof(this.OnActivateAsync)} - ID is {this.GetGrainId().GetGuidKey()}");
+		await base.OnActivateAsync(cancellationToken);
 	}
 
-	public override async Task OnDeactivateAsync()
+   public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken cancellationToken)
 	{
 		await Console.Out.WriteLineAsync(
-			$"{nameof(this.OnDeactivateAsync)} - primary ID is {this.GetGrainIdentity().PrimaryKey}").ConfigureAwait(false);
-		await base.OnDeactivateAsync().ConfigureAwait(false);
+			$"{nameof(this.OnDeactivateAsync)} - ID is {this.GetGrainId().GetGuidKey()}");
+		await base.OnDeactivateAsync(reason, cancellationToken);
 	}
 
-	public async Task<BigInteger> CalculateIterationCountAsync(BigInteger value)
+	public ValueTask<int> CalculateIterationCountAsync(string value)
 	{
-		var iterations = BigInteger.Zero;
+		var numberValue = BigInteger.Parse(value, CultureInfo.CurrentCulture);
+		var iterations = 0;
 
-		while (value > 1)
+		while (numberValue > 1)
 		{
-			value = value % 2 == 0 ?
-				value / 2 : ((3 * value) + 1) / 2;
+			numberValue = numberValue % 2 == 0 ?
+				numberValue / 2 : ((3 * numberValue) + 1) / 2;
 			iterations++;
-			await Task.Delay(5).ConfigureAwait(false);
 		}
 
-		return iterations;
+		return ValueTask.FromResult(iterations);
 	}
 }

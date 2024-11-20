@@ -3,7 +3,7 @@
 		<OutputType>Exe</OutputType>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
-		<PackageReference Include="Spackle" Version="11.0.0" />
+		<PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+		<PackageReference Include="Spackle" Version="12.0.0" />
 	</ItemGroup>
 </Project>
