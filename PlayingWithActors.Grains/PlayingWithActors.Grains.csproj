@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<ItemGroup>
+		<PackageReference Include="Collatz" Version="3.0.0" />
 		<PackageReference Include="Microsoft.Orleans.Sdk" Version="9.0.0" />
 	</ItemGroup>
 	<ItemGroup>

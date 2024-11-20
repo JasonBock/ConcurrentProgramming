@@ -4,6 +4,6 @@
 public interface ICollatzGrain
 	: IGrainWithGuidKey
 {
-   [Alias("CalculateIterationCountAsync")]
-   ValueTask<int> CalculateIterationCountAsync(string value);
+   [Alias("FindLongestSequence")]
+   ValueTask<(long value, long sequenceLength)> FindLongestSequence(long start, long finish);
 }

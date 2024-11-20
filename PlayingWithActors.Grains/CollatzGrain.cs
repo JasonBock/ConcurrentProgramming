@@ -1,4 +1,7 @@
-﻿using PlayingWithActors.Contracts;
+﻿using Collatz;
+using PlayingWithActors.Contracts;
+using System;
+using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Numerics;
 
@@ -7,32 +10,34 @@ namespace PlayingWithActors.Grains;
 public class CollatzGrain
 	: Grain, ICollatzGrain
 {
-   public override async Task OnActivateAsync(CancellationToken cancellationToken)
+	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
-		await Console.Out.WriteLineAsync(
+		Console.WriteLine(
 			$"{nameof(this.OnActivateAsync)} - ID is {this.GetGrainId().GetGuidKey()}");
 		await base.OnActivateAsync(cancellationToken);
 	}
 
-   public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken cancellationToken)
+	public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken cancellationToken)
 	{
-		await Console.Out.WriteLineAsync(
+		Console.WriteLine(
 			$"{nameof(this.OnDeactivateAsync)} - ID is {this.GetGrainId().GetGuidKey()}");
 		await base.OnDeactivateAsync(reason, cancellationToken);
 	}
 
-	public ValueTask<int> CalculateIterationCountAsync(string value)
+	public ValueTask<(long value, long sequenceLength)> FindLongestSequence(long start, long finish)
 	{
-		var numberValue = BigInteger.Parse(value, CultureInfo.CurrentCulture);
-		var iterations = 0;
+		(long value, long sequenceLength) result = (0, 0);
 
-		while (numberValue > 1)
+		for (var i = start; i < finish; i++)
 		{
-			numberValue = numberValue % 2 == 0 ?
-				numberValue / 2 : ((3 * numberValue) + 1) / 2;
-			iterations++;
+			var sequence = CollatzSequenceGenerator.Generate(i);
+
+			if (sequence.Length > result.sequenceLength)
+			{
+				result = (i, sequence.Length);
+			}
 		}
 
-		return ValueTask.FromResult(iterations);
+		return ValueTask.FromResult(result);
 	}
 }

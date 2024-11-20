@@ -4,9 +4,10 @@ using Spackle;
 
 //await BashLedgerAsync(new MonitorLedger(100));
 //await BashLedgerAsync(new LockLedger(100));
-//await Program.BashLedgerAsync(new SpinLockLedger(100));
-//await Program.BashLedgerAsync(new SpinLockLedger(100));
-BenchmarkRunner.Run<SpinLockPerformance>();
+//await BashLedgerAsync(new SpinLockLedger(100));
+
+//BenchmarkRunner.Run<SpinLockPerformance>();
+BenchmarkRunner.Run<InterlockedPerformance>();
 
 static async Task BashLedgerAsync(ILedger ledger)
 {

@@ -15,22 +15,29 @@ var client = host.Services.GetRequiredService<IClusterClient>();
 
 Console.WriteLine("Begin...");
 
-var sharedGrainId = Guid.NewGuid();
-
 var tasks = new List<Task>
 {
-	RunCalculationAsync("368497025897042654972594625799205742506794289425748658462507438917489371894631897457389056391065390165893165893016589031658903618950631890", Guid.NewGuid(), client),
-	RunCalculationAsync("568497025897042654972594625799205742506794289425748658462507438917489371894631897457389056391065390165893165893016589031658903618950631890", Guid.NewGuid(), client),
-	RunCalculationAsync("768497025897042654972594625799205742506794289425748658462507438917489371894631897457389056391065390165893165893016589031658903618950631890", Guid.NewGuid(), client)
+	RunCalculationAsync(Guid.NewGuid(), client),
+	RunCalculationAsync(Guid.NewGuid(), client),
+	RunCalculationAsync(Guid.NewGuid(), client)
 };
+
+//var sharedGrainId = Guid.NewGuid();
+
+//var tasks = new List<Task>
+//{
+//	RunCalculationAsync(sharedGrainId, client),
+//	RunCalculationAsync(sharedGrainId, client),
+//	RunCalculationAsync(sharedGrainId, client)
+//};
 
 await Task.WhenAll([.. tasks]);
 
-static async Task RunCalculationAsync(string value, Guid grainId, IClusterClient client)
+static async Task RunCalculationAsync(Guid grainId, IClusterClient client)
 {
 	var collatz = client.GetGrain<ICollatzGrain>(grainId);
 
-	var result = await collatz.CalculateIterationCountAsync(value);
+	var result = await collatz.FindLongestSequence(1_000_000, 5_000_000);
 
-	await Console.Out.WriteLineAsync($"Result is {result} from grain {grainId}");
+	Console.WriteLine($"Result is {result} from grain {grainId}");
 }
